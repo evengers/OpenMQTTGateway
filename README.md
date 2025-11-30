@@ -1,3 +1,55 @@
+workflow for mac mini compile 
+
+# Install/update PlatformIO
+pip3 install -U platformio
+
+# Clone OpenMQTTGateway v1.8.0+
+git clone https://github.com/1technophile/OpenMQTTGateway.git
+cd OpenMQTTGateway
+git checkout v1.8.0  # or use 'development' branch for latest
+
+
+# Replace platformio.ini with the config above
+# Or create production_env.ini with your overrides
+
+# Find your ESP32 port
+ls /dev/cu.*
+# Should show something like: /dev/cu.usbserial-0001
+
+# Clean build
+pio run -t clean -e esp32-ble-broker
+
+# Build with verbose output
+pio run -e esp32-ble-broker -v
+
+# Upload (replace with your actual port)
+pio run -e esp32-ble-broker -t upload --upload-port /dev/cu.usbserial-0001
+
+# Monitor serial output
+pio device monitor --port /dev/cu.usbserial-0001 --baud 115200
+
+
+
+
+
+2. Configuration Options
+You have two ways to use PicoMQTT:
+Option A: Embedded Broker Only (ESP32 acts as the MQTT broker)
+	•	Set -DMQTT_BROKER_MODE=1
+	•	Your ESP32 runs the broker on port 1883
+	•	Other devices connect to the ESP32’s IP address
+	•	Perfect for standalone/offline setups
+Option B: Hybrid Mode (ESP32 runs broker AND connects to external broker)
+	•	Set -DMQTT_BROKER_MODE=1
+	•	Also set -DMQTT_SERVER="external_broker_ip"
+	•	ESP32 runs local broker and bridges to external broker
+	•	Useful for redundancy or cloud integration
+
+
+
+
+
+
 [![Community forum](https://img.shields.io/badge/community-forum-brightgreen.svg)](https://community.openmqttgateway.com)
 
 ![Build](https://github.com/1technophile/OpenMQTTGateway/workflows/Build/badge.svg?branch=development)
